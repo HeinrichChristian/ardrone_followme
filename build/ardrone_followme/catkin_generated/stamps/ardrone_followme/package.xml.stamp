@@ -41,9 +41,11 @@
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>ardrone_autonomy</build_depend>
+  <build_depend>visualization_msgs</build_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>ardrone_autonomy</run_depend>
-
+  <run_depend>visualization_msgs</run_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- You can specify that this package is a metapackage here: -->

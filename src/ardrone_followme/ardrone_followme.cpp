@@ -1,30 +1,19 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include <ardrone_autonomy/Navdata.h>
-#include <iomanip> // for std::setprecision and std::fixed
-
+#include <iomanip> 
 
 ros::Publisher marker_pub;
 int count = 0;
 
-
 // A callback function. Executed each time a new pose message arrives .
 void poseMessageReceived ( const ardrone_autonomy::Navdata& msg) {
-ROS_INFO_STREAM("poseMessageReceived: " << count);
-	if (count == 0)
-	{
-		ros::NodeHandle n;
-		marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1000, true);		
-	}
+	ROS_INFO_STREAM("poseMessageReceived: " << count);
 	count++;
-	
 	if(msg.tags_count > 0) 	
 	{
 		ROS_INFO_STREAM( "Tags Count = " << msg.tags_count << " X = " << msg.tags_xc[0] << ", Y = " << msg.tags_yc[0]);
-		
-		ros::Rate r(1);
 	
-
 	    visualization_msgs::Marker marker;
 	    // Set the frame ID and timestamp.  See the TF tutorials for information on these.
 	    marker.header.frame_id = "/my_frame";
@@ -42,8 +31,8 @@ ROS_INFO_STREAM("poseMessageReceived: " << count);
 	    marker.action = visualization_msgs::Marker::ADD;
 
 		// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-		marker.pose.position.x = msg.tags_xc[0];
-		marker.pose.position.y = msg.tags_yc[0];
+		marker.pose.position.x = msg.tags_xc[0] / 100;
+		marker.pose.position.y = msg.tags_yc[0] / 100;
 		marker.pose.position.z = 0;
 		marker.pose.orientation.x = 0.0;
 		marker.pose.orientation.y = 0.0;
@@ -65,16 +54,7 @@ ROS_INFO_STREAM("poseMessageReceived: " << count);
   
 		// Publish the marker
 		ROS_INFO_STREAM( "Publish visualization_marker");
-		marker_pub.publish(marker);
-		/*if(marker_pub.getNumSubscribers() < 1)
-		{
-			ROS_INFO_STREAM("Please create a subscriber to the marker");
-		}
-		else
-		{
-			ROS_INFO_STREAM( "Publish visualization_marker");
-			marker_pub.publish(marker);
-		}*/
+		marker_pub.publish(marker);	
 	}
 }
 
@@ -86,7 +66,7 @@ int main(int argc, char **argv)
 		
 	// Create a subscriber object .
 	ros::Subscriber sub = nh.subscribe( "ardrone/navdata" , 1000 , &poseMessageReceived ) ;
-
+	marker_pub = nh.advertise<visualization_msgs::Marker>("visualization_marker", 5, true);		
 	// Let ROS take over.
  	ros::spin();
 }
