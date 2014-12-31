@@ -1,3 +1,5 @@
 #Ignore these directories
 build
 devel
+#ignore backup files
+*~
