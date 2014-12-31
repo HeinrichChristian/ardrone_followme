@@ -1,8 +1,0 @@
-prefix=/opt/ros/hydro/share/ardrone_followme/devel
-
-Name: ardrone_followme
-Description: Description of ardrone_followme
-Version: 0.0.1
-Cflags: 
-Libs: -L/opt/ros/hydro/share/ardrone_followme/devel/lib 
-Requires: 
