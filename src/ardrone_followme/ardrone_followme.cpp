@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include <ardrone_autonomy/Navdata.h>
+#include <tf/transform_broadcaster.h>
 #include <iomanip> 
 
 ros::Publisher marker_pub;
@@ -14,6 +15,15 @@ void poseMessageReceived ( const ardrone_autonomy::Navdata& msg) {
 	{
 		ROS_INFO_STREAM( "Tags Count = " << msg.tags_count << " X = " << msg.tags_xc[0] << ", Y = " << msg.tags_yc[0]);
 	
+	  static tf::TransformBroadcaster br;
+	  tf::Transform transform;
+	  transform.setOrigin( tf::Vector3(msg.tags_xc[0] / 10, msg.tags_yc[0] / 10, 0.0) );
+	  tf::Quaternion q;
+	  q.setRPY(0, 0, 0);
+	  transform.setRotation(q);
+	  br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "ar_marker"));
+	
+	/*
 	    visualization_msgs::Marker marker;
 	    // Set the frame ID and timestamp.  See the TF tutorials for information on these.
 	    marker.header.frame_id = "ardrone_base_frontcam";
@@ -21,7 +31,7 @@ void poseMessageReceived ( const ardrone_autonomy::Navdata& msg) {
 	 
 	    // Set the namespace and id for this marker.  This serves to create a unique ID
 	    // Any marker sent with the same namespace and id will overwrite the old one
-	    marker.ns = "basic_shapes";
+	    marker.ns = "ardrone_marker";
 	    marker.id = 0;
 	 
 	    // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
@@ -55,6 +65,7 @@ void poseMessageReceived ( const ardrone_autonomy::Navdata& msg) {
 		// Publish the marker
 		ROS_INFO_STREAM( "Publish visualization_marker");
 		marker_pub.publish(marker);	
+		*/
 	}
 }
 
@@ -66,7 +77,7 @@ int main(int argc, char **argv)
 		
 	// Create a subscriber object .
 	ros::Subscriber sub = nh.subscribe( "ardrone/navdata" , 1000 , &poseMessageReceived ) ;
-	marker_pub = nh.advertise<visualization_msgs::Marker>("visualization_marker", 5, true);		
+	//marker_pub = nh.advertise<visualization_msgs::Marker>("visualization_marker", 5, true);		
 	// Let ROS take over.
  	ros::spin();
 }
